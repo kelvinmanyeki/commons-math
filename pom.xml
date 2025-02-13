@@ -57,8 +57,8 @@
     <commons.jira.id>MATH</commons.jira.id>
     <commons.jira.pid>12310485</commons.jira.pid>
     <commons.encoding>UTF-8</commons.encoding>
-    <maven.compiler.source>1.8</maven.compiler.source>
-    <maven.compiler.target>1.8</maven.compiler.target>
+    <maven.compiler.source>17</maven.compiler.source>
+    <maven.compiler.target>17</maven.compiler.target>
     <!-- MathJax configuration. See the maven-javadoc-plugin plugin. -->
     <math.mathjax.url>https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js</math.mathjax.url>
     <math.commons.numbers.version>1.2</math.commons.numbers.version>
@@ -100,6 +100,9 @@
 
     <!-- Set by modules to create a custom jira report -->
     <math.jira.component />
+
+    <sonar.organization>kevosd</sonar.organization>
+    <sonar.host.url>https://sonarcloud.io</sonar.host.url>
   </properties>
 
   <modules> <!-- Do not change the ordering of the 4 blocks below. -->
@@ -222,6 +225,8 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
         <configuration>
+          <source>17</source>
+          <target>17</target>
           <compilerArgs>
             <arg>-Xlint:all,-options,-path</arg>
           </compilerArgs>
@@ -401,6 +406,11 @@
             Override CP to use the last revision of the repository (OK for release jars). -->
           <useLastCommittedRevision>false</useLastCommittedRevision>
         </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.sonarsource.scanner.maven</groupId>
+        <artifactId>sonar-maven-plugin</artifactId>
+        <version>3.7.0.1746</version>
       </plugin>
     </plugins>
   </build>
