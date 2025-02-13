@@ -74,4 +74,4 @@ jobs:
       - name: Run SonarCloud Analysis
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: mvn -B org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=kelvinmanyeki_commons-math
+        run: mvn -B -X org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=kelvinmanyeki_commons-math
