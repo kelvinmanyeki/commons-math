@@ -17,6 +17,7 @@
 # contributor license agreements. See the NOTICE file for details.
 # Licensed under the Apache License, Version 2.0.
 
+
 name: Java CI with SonarCloud
 
 on:
@@ -57,12 +58,14 @@ jobs:
           java-version: ${{ matrix.java }}
       - name: Build with Maven
         run: mvn -V --no-transfer-progress verify
+      - name: List Target Directory (Debugging)
+        run: ls -R target  # Debugging step to confirm the contents of the target directory
       - name: Upload Artifacts (Ubuntu + Java 17 only)
         if: matrix.os == 'ubuntu-latest' && matrix.java == 17
         uses: actions/upload-artifact@v4
         with:
           name: compiled-classes
-          path: target/  # Upload the compiled classes from the target directory
+          path: target/classes  # Upload only the compiled classes directory
           retention-days: 1  # Keep artifacts for 1 day
 
   sonarcloud:
@@ -82,7 +85,9 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: compiled-classes
-          path: target  # Download the compiled classes to the target directory
+          path: target/classes  # Download the compiled classes to the target/classes directory
+      - name: List Downloaded Artifacts (Debugging)
+        run: ls -R target  # Debugging step to confirm the contents of the target directory
       - name: Run SonarCloud Analysis
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
