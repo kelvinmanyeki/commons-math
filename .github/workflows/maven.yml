@@ -62,11 +62,17 @@ jobs:
         run: ls -R target  # Debugging step to confirm the contents of the target directory
       - name: Upload Artifacts (Ubuntu + Java 17 only)
         if: matrix.os == 'ubuntu-latest' && matrix.java == 17
-        uses: actions/upload-artifact@v4
-        with:
-          name: compiled-classes
-          path: target/classes  # Upload only the compiled classes directory
-          retention-days: 1  # Keep artifacts for 1 day
+        run: |
+          if [ -d "target/classes" ]; then
+            echo "Uploading compiled classes..."
+            actions/upload-artifact@v4
+              name: compiled-classes
+              path: target/classes
+              retention-days: 1
+          else
+            echo "Error: target/classes directory does not exist"
+            exit 1
+          fi
 
   sonarcloud:
     name: SonarCloud Analysis
