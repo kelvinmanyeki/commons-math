@@ -58,21 +58,6 @@ jobs:
           java-version: ${{ matrix.java }}
       - name: Build with Maven
         run: mvn -V --no-transfer-progress verify
-      - name: List Target Directory (Debugging)
-        run: ls -R target  # Debugging step to confirm the contents of the target directory
-      - name: Upload Artifacts (Ubuntu + Java 17 only)
-        if: matrix.os == 'ubuntu-latest' && matrix.java == 17
-        run: |
-          if [ -d "target/classes" ]; then
-            echo "Uploading compiled classes..."
-            actions/upload-artifact@v4
-              name: compiled-classes
-              path: target/classes
-              retention-days: 1
-          else
-            echo "Error: target/classes directory does not exist"
-            exit 1
-          fi
 
   sonarcloud:
     name: SonarCloud Analysis
@@ -87,17 +72,7 @@ jobs:
         with:
           java-version: 17
           distribution: 'zulu'
-      - name: Download Artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: compiled-classes
-          path: target/classes  # Download the compiled classes to the target/classes directory
-      - name: List Downloaded Artifacts (Debugging)
-        run: ls -R target  # Debugging step to confirm the contents of the target directory
       - name: Run SonarCloud Analysis
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: |
-          mvn -B -X org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
-            -Dsonar.projectKey=kelvinmanyeki_commons-math \
-            -Dsonar.java.binaries=target/classes
+        run: mvn -B -X org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=kelvinmanyeki_commons-math
