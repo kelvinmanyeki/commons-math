@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.commons.math4.dependability;
+package org.myproject.dependability;
 
 import org.junit.Before;
 import org.junit.Test;

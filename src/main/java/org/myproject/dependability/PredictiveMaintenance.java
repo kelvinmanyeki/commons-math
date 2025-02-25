@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.commons.math4.dependability;
+package org.myproject.dependability;
 
 import org.apache.commons.math3.stat.regression.SimpleRegression;
 import java.util.logging.Logger;
@@ -79,3 +79,4 @@ public class PredictiveMaintenance {
         LOGGER.info("Predicted RUL for Temperature 92.0°C: " + predictedRUL + " days");
     }
 }
+

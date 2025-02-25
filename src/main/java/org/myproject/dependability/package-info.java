@@ -15,6 +15,6 @@
  * limitations under the License.
  */
 
-package org.apache.commons.math4.dependability;
+package org.myproject.dependability;
 
 
