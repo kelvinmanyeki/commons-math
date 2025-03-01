@@ -103,6 +103,7 @@
 
     <sonar.organization>kevosd</sonar.organization>
     <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+    <sonar.java.binaries>target/classes</sonar.java.binaries>
     
   </properties>
 
@@ -123,6 +124,9 @@
     <!-- 4. Modules that depend on "legacy" codes. -->
     <module>commons-math-docs</module>
     <module>commons-math-examples</module>
+
+    <!-- 5. Modules that creates custom predictive maintenance app -->
+    <module>predictive-maintenance</module>
 
   </modules>
 
@@ -342,7 +346,7 @@
             <exclude>src/site/resources/release-notes/RELEASE-NOTES-*.txt</exclude>
             <exclude>dist-archive/**</exclude>
             <exclude>**/site-content/**</exclude>
-
+            
             <!-- MANIFEST files cannot have any comments, so we can't put license header -->
             <exclude>src/test/maxima/special/RealFunctionValidation/MANIFEST.txt</exclude>
 
@@ -359,7 +363,7 @@
             <exclude>src/test/resources/org/apache/commons/math4/legacy/stat/data/NumAcc4.txt</exclude>
             <exclude>src/test/resources/org/apache/commons/math4/legacy/stat/data/Michelso.txt</exclude>
             <exclude>src/test/resources/org/apache/commons/math4/legacy/stat/data/Mavro.txt</exclude>
-
+            
             <!-- direction numbers for Sobol generation from Frances Y. Kuo and Stephen Joe,
                  available under a BSD-style license (see LICENSE.txt) -->
             <exclude>src/main/resources/assets/org/apache/commons/math4/legacy/random/new-joe-kuo-6.21201</exclude>
