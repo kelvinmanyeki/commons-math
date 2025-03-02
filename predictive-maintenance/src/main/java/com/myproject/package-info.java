@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/**
+/*
  * Contains classes for predictive maintenance functionality.
 */
 package com.myproject;
