@@ -36,6 +36,7 @@ on:
 
 permissions:
   contents: read
+  security-events: write  # Required for Code Scanning alerts
 
 jobs:
   build:
@@ -44,9 +45,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
-        java: [11, 17]
-
+        os: [ubuntu-latest, macos-latest, windows-latest]  # Platforms
+        java: [8, 11, 17, 21]  # JDK versions
     steps:
       - uses: actions/checkout@v4
         with:
@@ -58,11 +58,17 @@ jobs:
           java-version: ${{ matrix.java }}
       - name: Build with Maven
         run: mvn -V --no-transfer-progress verify
+      - name: Upload JaCoCo Report (Optional)
+        if: matrix.os == 'ubuntu-latest'  # Example: Upload coverage from one platform
+        uses: actions/upload-artifact@v4
+        with:
+          name: jacoco-report
+          path: target/site/jacoco/jacoco.xml
 
   sonarcloud:
     name: SonarCloud Analysis
     runs-on: ubuntu-latest
-    needs: build  # Ensures Sonar runs only if CI succeeds
+    needs: build  # Wait for all build jobs to complete
     steps:
       - uses: actions/checkout@v4
         with:
@@ -72,7 +78,22 @@ jobs:
         with:
           java-version: 17
           distribution: 'zulu'
-      - name: Run SonarCloud Analysis
+      - name: Download JaCoCo Report (Optional)
+        uses: actions/download-artifact@v4
+        with:
+          name: jacoco-report
+          path: target/site/jacoco
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
         env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: mvn -B -X org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=kelvinmanyeki_commons-math
+        with:
+          args: >
+            -Dsonar.projectKey=kelvinmanyeki_commons-math
+            -Dsonar.organization=kelvinmanyeki
+            -Dsonar.host.url=https://sonarcloud.io
+            -Dsonar.java.binaries=target/classes
+            -Dsonar.sources=src/main/java
+            -Dsonar.tests=src/test/java
+            -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
