@@ -72,16 +72,11 @@ jobs:
         with:
           java-version: 17
           distribution: 'zulu'
-      - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@master
+          
+      
+       - name: Run SonarCloud Analysis
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        with:
-          args: >
-            -Dsonar.projectKey=kelvinmanyeki_commons-math
-            -Dsonar.organization=kelvinmanyeki
-            -Dsonar.host.url=https://sonarcloud.io
-            -Dsonar.java.binaries=target/classes
-            -Dsonar.sources=src/main/java
-            -Dsonar.tests=src/test/java
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: mvn -B -X org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=kelvinmanyeki_commons-math
+  
