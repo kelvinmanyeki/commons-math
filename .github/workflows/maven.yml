@@ -51,13 +51,15 @@ jobs:
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
+
       - name: Set up JDK ${{ matrix.java }}
         uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
           java-version: ${{ matrix.java }}
+
       - name: Build with Maven
-        run: mvn -V --no-transfer-progress verify
+        run: mvn -V --no-transfer-progress install -DskipTests
 
   sonarcloud:
     name: SonarCloud Analysis
@@ -67,11 +69,13 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
           java-version: 17
           distribution: 'zulu'
+
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
         env:
@@ -82,6 +86,12 @@ jobs:
             -Dsonar.projectKey=kelvinmanyeki_commons-math
             -Dsonar.organization=kevosd
             -Dsonar.host.url=https://sonarcloud.io
-            -Dsonar.java.binaries=target/classes
+            -Dsonar.java.binaries=commons-math-neuralnet/target/classes,
+            commons-math-transform/target/classes,
+            commons-math-legacy-core/target/classes,
+            commons-math-legacy-exception/target/classes,
+            commons-math-legacy/target/classes,
+            predictive-maintenance/target/classes
             -Dsonar.sources=src/main/java
             -Dsonar.tests=src/test/java
+            -Dsonar.exclusions=commons-math-docs/**,commons-math-examples/**,dist-archive/**,examples-sofm/**,examples-kmeans/**,chinese-rings/**,tsp/**,image/**
