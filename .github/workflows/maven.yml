@@ -86,8 +86,7 @@ jobs:
             -Dsonar.java.binaries=commons-math-transform/target/classes
             -Dsonar.java.binaries=commons-math-legacy-core/target/classes
             -Dsonar.java.binaries=commons-math-legacy-exception/target/classes
-            -Dsonar.java.binaries=commons-math-legacy/target/classes
-            -Dsonar.java.binaries=predictive-maintenance/target/classes
+            -Dsonar.java.binaries=commons-math-legacy/target/classes          
             -Dsonar.sources=src/main/java
             -Dsonar.tests=src/test/java
-            -Dsonar.exclusions=commons-math-docs/**,commons-math-examples/**,dist-archive/**,examples-sofm/**,examples-kmeans/**,chinese-rings/**,tsp/**,image/**
+            -Dsonar.exclusions=commons-math-docs/**,commons-math-examples/**,dist-archive/**,examples-sofm/**,examples-kmeans/**,predictive-maintenance/**,chinese-rings/**,tsp/**,image/**
