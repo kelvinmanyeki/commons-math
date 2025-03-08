@@ -51,6 +51,8 @@
     <math.imaging.version>1.0-alpha3</math.imaging.version>
     <math.picocli.version>3.9.5</math.picocli.version>
 
+    <sonar.skip>true</sonar.skip>
+
     <!-- Disable JApiCmp failures (but keep the report). The examples API is allowed to change. -->
     <commons.japicmp.breakBuildOnBinaryIncompatibleModifications>false</commons.japicmp.breakBuildOnBinaryIncompatibleModifications>
     <commons.japicmp.breakBuildOnSourceIncompatibleModifications>false</commons.japicmp.breakBuildOnSourceIncompatibleModifications>

@@ -34,6 +34,7 @@
     <properties>
         <math.parent.dir>${project.basedir}/..</math.parent.dir>
         <sonar.java.binaries>target/classes</sonar.java.binaries> <!-- Add this property -->
+        <sonar.skip>false</sonar.skip> 
     </properties>
 
     <dependencies>

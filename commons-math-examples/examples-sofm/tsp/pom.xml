@@ -43,6 +43,8 @@
     <!-- Workaround to avoid duplicating config files. -->
     <math.parent.dir>${basedir}/../../..</math.parent.dir>
 
+    <sonar.skip>true</sonar.skip>
+
     <uberjar.name>examples-sofm-tsp</uberjar.name>
     <project.mainClass>org.apache.commons.math4.examples.sofm.tsp.StandAlone</project.mainClass>
   </properties>

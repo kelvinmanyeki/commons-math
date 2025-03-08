@@ -53,6 +53,7 @@
     <skipSurefireReport>true</skipSurefireReport>
     <!-- Disable javadoc errors so an aggregate is always created. -->
     <doclint.javadoc.qualifier>-Xdoclint:none</doclint.javadoc.qualifier>
+    <sonar.skip>true</sonar.skip>
   </properties>
 
   <!-- Depend on all other modules -->

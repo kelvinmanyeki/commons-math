@@ -36,6 +36,7 @@ under the License.
     <animal.sniffer.skip>true</animal.sniffer.skip>
     <!-- Commons Release Plugin -->
     <commons.release.isDistModule>true</commons.release.isDistModule>
+    <sonar.skip>true</sonar.skip>
     <commons.siteOutputDirectory>${basedir}/../target/site</commons.siteOutputDirectory>
     <commons.releaseNotesLocation>${basedir}/../RELEASE-NOTES.txt</commons.releaseNotesLocation>
     <commons.distSvnStagingUrl>scm:svn:https://dist.apache.org/repos/dist/dev/commons/${commons.componentid}</commons.distSvnStagingUrl>

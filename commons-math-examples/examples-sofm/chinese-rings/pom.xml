@@ -45,6 +45,8 @@
 
     <uberjar.name>examples-sofm-chineserings</uberjar.name>
     <project.mainClass>org.apache.commons.math4.examples.sofm.chineserings.StandAlone</project.mainClass>
+
+    <sonar.skip>true</sonar.skip>
   </properties>
 
   <dependencies>

@@ -42,6 +42,7 @@
 
     <uberjar.name>examples-kmeans-image</uberjar.name>
     <project.mainClass>org.apache.commons.math4.examples.kmeans.image.StandAlone</project.mainClass>
+    <sonar.skip>true</sonar.skip>
   </properties>
 
   <dependencies>
