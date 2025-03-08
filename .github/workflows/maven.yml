@@ -46,7 +46,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]  # Platforms
-        java: [8, 11, 17, 21]  # JDK versions
+        java: [11, 17, 21]  # JDK versions
     steps:
       - uses: actions/checkout@v4
         with:
@@ -58,12 +58,6 @@ jobs:
           java-version: ${{ matrix.java }}
       - name: Build with Maven
         run: mvn -V --no-transfer-progress verify
-      - name: Upload JaCoCo Report (Optional)
-        if: matrix.os == 'ubuntu-latest'  # Example: Upload coverage from one platform
-        uses: actions/upload-artifact@v4
-        with:
-          name: jacoco-report
-          path: target/site/jacoco/jacoco.xml
 
   sonarcloud:
     name: SonarCloud Analysis
@@ -78,22 +72,22 @@ jobs:
         with:
           java-version: 17
           distribution: 'zulu'
-      - name: Download JaCoCo Report (Optional)
-        uses: actions/download-artifact@v4
-        with:
-          name: jacoco-report
-          path: target/site/jacoco
       - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@master
+        uses: SonarSource/sonarqube-scan-action@v5.0.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
           args: >
             -Dsonar.projectKey=kelvinmanyeki_commons-math
-            -Dsonar.organization=kelvinmanyeki
+            -Dsonar.organization=kevosd
             -Dsonar.host.url=https://sonarcloud.io
-            -Dsonar.java.binaries=target/classes
+            -Dsonar.java.binaries=commons-math-neuralnet/target/classes
+            -Dsonar.java.binaries=commons-math-transform/target/classes
+            -Dsonar.java.binaries=commons-math-legacy-core/target/classes
+            -Dsonar.java.binaries=commons-math-legacy-exception/target/classes
+            -Dsonar.java.binaries=commons-math-legacy/target/classes
+            -Dsonar.java.binaries=predictive-maintenance/target/classes
             -Dsonar.sources=src/main/java
             -Dsonar.tests=src/test/java
-            -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
+            -Dsonar.exclusions=commons-math-docs/**,commons-math-examples/**,dist-archive/**,examples-sofm/**,examples-kmeans/**,chinese-rings/**,tsp/**,image/**
