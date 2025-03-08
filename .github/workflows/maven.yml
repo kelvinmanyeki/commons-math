@@ -82,11 +82,7 @@ jobs:
             -Dsonar.projectKey=kelvinmanyeki_commons-math
             -Dsonar.organization=kevosd
             -Dsonar.host.url=https://sonarcloud.io
-            -Dsonar.java.binaries=commons-math-neuralnet/target/classes
-            -Dsonar.java.binaries=commons-math-transform/target/classes
-            -Dsonar.java.binaries=commons-math-legacy-core/target/classes
-            -Dsonar.java.binaries=commons-math-legacy-exception/target/classes
-            -Dsonar.java.binaries=commons-math-legacy/target/classes          
-            -Dsonar.sources=src/main/java
-            -Dsonar.tests=src/test/java
+            -Dsonar.java.binaries=commons-math-neuralnet/target/classes,commons-math-transform/target/classes,commons-math-legacy-core/target/classes,commons-math-legacy-exception/target/classes,commons-math-legacy/target/classes
+            -Dsonar.sources=commons-math-neuralnet/src/main/java,commons-math-transform/src/main/java,commons-math-legacy-core/src/main/java,commons-math-legacy-exception/src/main/java,commons-math-legacy/src/main/java
+            -Dsonar.tests=commons-math-neuralnet/src/test/java,commons-math-transform/src/test/java,commons-math-legacy-core/src/test/java,commons-math-legacy-exception/src/test/java,commons-math-legacy/src/test/java
             -Dsonar.exclusions=commons-math-docs/**,commons-math-examples/**,dist-archive/**,examples-sofm/**,examples-kmeans/**,predictive-maintenance/**,chinese-rings/**,tsp/**,image/**
