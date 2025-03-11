@@ -96,7 +96,7 @@ jobs:
           for artifact in target-artifacts/*; do
             module_name=$(basename $artifact | sed 's/target-.*-.*-//')
             mkdir -p $module_name/target
-            mv $artifact/* $module_name/target/
+            cp -r $artifact/* $module_name/target/
           done
 
       - name: SonarCloud Scan
