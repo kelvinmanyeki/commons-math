@@ -59,7 +59,7 @@ public final class Main {
         regression.newSampleData(y, x);
 
         final double[] params = regression.estimateRegressionParameters();
-        final double[] input = {1100, 55, 35};  // Three-variable input
+        final double[] input = {1100, 55, 35}; // Three-variable input
         final double prediction = calculatePrediction(params, input);
 
         LOG.info("Predicted failure probability for 1100h/55°C/35mm: {}", prediction);
@@ -69,14 +69,11 @@ public final class Main {
      * Calculates failure probability prediction using regression parameters.
      *
      * @param params regression parameters [intercept, hourCoef, tempCoef, vibCoef]
-     * @param input  input values [hours, temp, vibration]
+     * @param input input values [hours, temp, vibration]
      * @return predicted failure probability
      */
-    private static double calculatePrediction(final double[] params, final double[] input) {
-        return params[0] +
-                params[1] * input[0] +
-                params[2] * input[1] +
-                params[3] * input[2];
+    public static double calculatePrediction(final double[] params, final double[] input) {
+        return params[0] + params[1] * input[0] + params[2] * input[1] + params[3] * input[2];
     }
 
     /**
@@ -85,10 +82,8 @@ public final class Main {
      * @param features input features [hours, temp, vibration]
      * @return base failure probability without noise
      */
-    private static double calculateBaseFailureProbability(final double[] features) {
+    public static double calculateBaseFailureProbability(final double[] features) {
         // Simplified example: linear combination of normalized features
-        return (features[0] * 0.0004) +
-                (features[1] * 0.002) +
-                (features[2] * 0.0015);
+        return (features[0] * 0.0004) + (features[1] * 0.002) + (features[2] * 0.0015);
     }
 }
