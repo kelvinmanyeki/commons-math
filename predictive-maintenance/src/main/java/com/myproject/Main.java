@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package com.myproject;
+ package com.myproject;
 
 import org.apache.commons.math3.stat.regression.OLSMultipleLinearRegression;
 import org.slf4j.Logger;
@@ -32,7 +32,7 @@ public final class Main {
     private static final Logger LOG = LoggerFactory.getLogger(Main.class);
 
     private Main() {
-        // Private constructor to prevent instantiation
+        throw new UnsupportedOperationException("Utility class cannot be instantiated");
     }
 
     /**
@@ -69,10 +69,17 @@ public final class Main {
      * Calculates failure probability prediction using regression parameters.
      *
      * @param params regression parameters [intercept, hourCoef, tempCoef, vibCoef]
-     * @param input input values [hours, temp, vibration]
+     * @param input  input values [hours, temp, vibration]
      * @return predicted failure probability
+     * @throws IllegalArgumentException if params or input is invalid
      */
     public static double calculatePrediction(final double[] params, final double[] input) {
+        if (params == null || params.length != 4) {
+            throw new IllegalArgumentException("Params array must have exactly 4 elements.");
+        }
+        if (input == null || input.length != 3) {
+            throw new IllegalArgumentException("Input array must have exactly 3 elements.");
+        }
         return params[0] + params[1] * input[0] + params[2] * input[1] + params[3] * input[2];
     }
 
@@ -81,9 +88,12 @@ public final class Main {
      *
      * @param features input features [hours, temp, vibration]
      * @return base failure probability without noise
+     * @throws IllegalArgumentException if features is invalid
      */
     public static double calculateBaseFailureProbability(final double[] features) {
-        // Simplified example: linear combination of normalized features
+        if (features == null || features.length != 3) {
+            throw new IllegalArgumentException("Input array must have exactly 3 elements.");
+        }
         return (features[0] * 0.0004) + (features[1] * 0.002) + (features[2] * 0.0015);
     }
 }
