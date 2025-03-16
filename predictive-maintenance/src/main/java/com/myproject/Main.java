@@ -1,10 +1,10 @@
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
+ * contributor license agreements. See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
+ * the License. You may obtain a copy of the License at
  *
  *      http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
- package com.myproject;
+package com.myproject;
 
 import org.apache.commons.math3.stat.regression.OLSMultipleLinearRegression;
 import org.slf4j.Logger;
@@ -31,6 +31,9 @@ public final class Main {
      */
     private static final Logger LOG = LoggerFactory.getLogger(Main.class);
 
+    /**
+     * Private constructor to prevent instantiation.
+     */
     private Main() {
         throw new UnsupportedOperationException("Utility class cannot be instantiated");
     }
@@ -69,7 +72,7 @@ public final class Main {
      * Calculates failure probability prediction using regression parameters.
      *
      * @param params regression parameters [intercept, hourCoef, tempCoef, vibCoef]
-     * @param input  input values [hours, temp, vibration]
+     * @param input input values [hours, temp, vibration]
      * @return predicted failure probability
      * @throws IllegalArgumentException if params or input is invalid
      */
@@ -80,7 +83,7 @@ public final class Main {
         if (input == null || input.length != 3) {
             throw new IllegalArgumentException("Input array must have exactly 3 elements.");
         }
-        return params[0] + params[1] * input[0] + params[2] * input[1] + params[3] * input[2];
+        return params[0] + (params[1] * input[0]) + (params[2] * input[1]) + (params[3] * input[2]);
     }
 
     /**
