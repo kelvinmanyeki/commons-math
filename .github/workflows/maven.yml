@@ -17,6 +17,7 @@
 # contributor license agreements. See the NOTICE file for details.
 # Licensed under the Apache License, Version 2.0.
 
+
 name: Java CI with SonarCloud and Docker
 
 on:
@@ -98,7 +99,7 @@ jobs:
           password: ${{ secrets.DOCKER_HUB_TOKEN }}
 
       - name: Build Docker image
-        run: docker build -t manyeki/predictive-maintenance:latest .
+        run: docker build -t your-dockerhub-username/your-app-name:latest .
 
       - name: Push Docker image
-        run: docker push manyeki/predictive-maintenance:latest
+        run: docker push your-dockerhub-username/your-app-name:latest
