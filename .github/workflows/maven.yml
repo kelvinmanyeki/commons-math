@@ -18,7 +18,7 @@
 # Licensed under the Apache License, Version 2.0.
 
 
-name: Java CI with SonarCloud
+name: Java CI with SonarCloud and Docker
 
 on:
   workflow_dispatch:  # Manual trigger
@@ -73,3 +73,33 @@ jobs:
             -Dsonar.sources=commons-math-neuralnet/src/main/java,commons-math-transform/src/main/java,commons-math-legacy-core/src/main/java,commons-math-legacy-exception/src/main/java,commons-math-legacy/src/main/java,predictive-maintenance/src/main/java
             -Dsonar.tests=commons-math-neuralnet/src/test/java,commons-math-transform/src/test/java,commons-math-legacy-core/src/test/java,commons-math-legacy-exception/src/test/java,commons-math-legacy/src/test/java,predictive-maintenance/src/test/java
             -Dsonar.exclusions=commons-math-docs/**,commons-math-examples/**,dist-archive/**,examples-sofm/**,examples-kmeans/**,chinese-rings/**,tsp/**,image/**
+
+  dockerize:
+    name: Dockerize Application
+    runs-on: ubuntu-latest
+    needs: build-and-scan  # Ensure this job runs only after the build-and-scan job succeeds
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: 17
+          distribution: 'zulu'
+
+      - name: Build with Maven
+        run: mvn -V --no-transfer-progress package -DskipTests
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_TOKEN }}
+
+      - name: Build Docker image
+        run: docker build -t your-dockerhub-username/your-app-name:latest .
+
+      - name: Push Docker image
+        run: docker push your-dockerhub-username/your-app-name:latest
