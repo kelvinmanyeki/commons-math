@@ -21,7 +21,7 @@
 name: Java CI with SonarCloud and Docker
 
 on:
-  workflow_dispatch:  # Manual trigger
+  workflow_dispatch:  # Manuall trigger
   push:
     branches:
       - master
