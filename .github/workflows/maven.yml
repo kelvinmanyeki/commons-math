@@ -51,7 +51,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           java-version: '17'
-          distribution: 'zulu'
+          distribution: 'temurin'  # Changed from 'zulu' to 'temurin'
 
       - name: Build with Maven
         run: mvn -V --no-transfer-progress verify
@@ -87,7 +87,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           java-version: '17'
-          distribution: 'zulu'
+          distribution: 'temurin'  # Changed from 'zulu' to 'temurin'
 
       - name: Build with Maven
         run: mvn -V --no-transfer-progress package -DskipTests
