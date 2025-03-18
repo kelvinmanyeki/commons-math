@@ -99,7 +99,7 @@ jobs:
           password: ${{ secrets.DOCKER_HUB_TOKEN }}
 
       - name: Build Docker image
-        run: docker build -t your-dockerhub-username/your-app-name:latest .
+        run: docker build -t manyeki/predictive-maintenance:latest .
 
       - name: Push Docker image
-        run: docker push your-dockerhub-username/your-app-name:latest
+        run: docker push manyeki/predictive-maintenance:latest
