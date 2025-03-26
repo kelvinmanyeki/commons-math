@@ -219,6 +219,20 @@
         <type>signature</type>
       </dependency>
 
+      <dependency>
+        <groupId>org.openjdk.jmh</groupId>
+        <artifactId>jmh-core</artifactId>
+        <version>1.37</version>
+        <scope>test</scope>
+      </dependency>
+    
+      <dependency>
+       <groupId>org.openjdk.jmh</groupId>
+        <artifactId>jmh-generator-annprocess</artifactId>
+        <version>1.37</version>
+        <scope>test</scope>
+      </dependency>
+
     </dependencies>
   </dependencyManagement>
 
@@ -228,6 +242,44 @@
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter</artifactId>
       <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>edu.washington.cs</groupId>
+      <artifactId>randoop-all</artifactId>
+      <version>4.0.4</version>
+      <scope>test</scope>
+    </dependency>
+
+
+    <dependency>
+      <groupId>com.github.javaparser</groupId>
+      <artifactId>javaparser-core</artifactId>
+      <version>3.26.3</version> <!-- Use the latest stable version -->
+    </dependency>
+
+    <dependency>
+      <groupId>org.plumelib</groupId>
+      <artifactId>options</artifactId>
+      <version>2.0.3</version> <!-- Adjust if needed -->
+    </dependency>
+
+    <dependency>
+      <groupId>org.plumelib</groupId>
+      <artifactId>plume-util</artifactId>
+      <version>1.10.0</version> <!-- Use the correct version if needed -->
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-exec</artifactId>
+      <version>1.4.0</version> <!-- Use the latest version available -->
+    </dependency>
+
+    <dependency>
+      <groupId>com.google.code.gson</groupId>
+      <artifactId>gson</artifactId>
+      <version>2.12.1</version>
     </dependency>
 
   </dependencies>
@@ -242,6 +294,13 @@
         <configuration>
           <source>17</source>
           <target>17</target>
+          <annotationProcessorPaths>
+            <path>
+              <groupId>org.openjdk.jmh</groupId>
+              <artifactId>jmh-generator-annprocess</artifactId>
+              <version>1.37</version>
+            </path>
+          </annotationProcessorPaths>
           <compilerArgs>
             <arg>-Xlint:all,-options,-path</arg>
           </compilerArgs>
@@ -291,6 +350,10 @@
           <logViolationsToConsole>true</logViolationsToConsole>
           <failOnViolation>true</failOnViolation>
           <resourceExcludes>NOTICE,LICENSE,**/*.properties</resourceExcludes>
+          <skip>${checkstyle.skip}</skip>
+          <skipTests>true</skipTests>
+          <excludes>**/generated-sources/**/*,**/generated-test-sources/**/*,**/jmh_generated/**/*,**/AccurateMathCalcTestHelper.java</excludes>
+          <includeTestSourceDirectory>true</includeTestSourceDirectory>
         </configuration>
         <executions>
           <execution>
@@ -358,6 +421,7 @@
             <exclude>dist-archive/**</exclude>
             <exclude>**/site-content/**</exclude>
             <exclude>**/dependency-reduced-pom.xml</exclude>
+            <exclude>**/cp.txt</exclude>
             
             <!-- MANIFEST files cannot have any comments, so we can't put license header -->
             <exclude>src/test/maxima/special/RealFunctionValidation/MANIFEST.txt</exclude>
@@ -379,6 +443,11 @@
             <!-- direction numbers for Sobol generation from Frances Y. Kuo and Stephen Joe,
                  available under a BSD-style license (see LICENSE.txt) -->
             <exclude>src/main/resources/assets/org/apache/commons/math4/legacy/random/new-joe-kuo-6.21201</exclude>
+            <exclude>**/classpath.txt</exclude>
+            <exclude>**/randoop-classes.txt</exclude>
+            <exclude>**/AccurateMathCalcBenchmark.java</exclude>
+            <exclude>**/AccurateMathCalcTestHelper.java</exclude>
+            <exclude>**/target/**</exclude>
           </excludes>
         </configuration>
       </plugin>
@@ -482,6 +551,34 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>build-classpath</id>
+            <goals>
+              <goal>build-classpath</goal>
+            </goals>
+            <configuration>
+              <includeScope>runtime</includeScope>
+              <outputProperty>depClasspath</outputProperty>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <configuration>
+          <mainClass>BenchmarkRunner</mainClass>
+          <systemProperties>
+            <systemProperty>
+              <key>java.class.path</key>
+              <value>${project.build.outputDirectory}${path.separator}${depClasspath}</value>
+            </systemProperty>
+          </systemProperties>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
 
@@ -498,6 +595,9 @@
             <exclude>src/site/resources/release-notes/RELEASE-NOTES-*.txt</exclude>
             <exclude>dist-archive/**</exclude>
             <exclude>**/site-content/**</exclude>
+            <exclude>**/commons-math-core/src/test/java/org/apache/commons/math4/core/jdkmath/AccurateMathCalcTestHelper.java</exclude>
+            <exclude>**/commons-math-core/cp.txt</exclude>
+            <exclude>**/commons-math-core/classpath.txt</exclude>
           </excludes>
         </configuration>
       </plugin>
@@ -530,6 +630,8 @@
           <suppressionsLocation>${math.parent.dir}/src/main/resources/checkstyle/checkstyle-suppressions.xml</suppressionsLocation>
           <enableRulesSummary>false</enableRulesSummary>
           <includeResources>false</includeResources>
+          <excludes>**/generated-sources/**/*,**/generated-test-sources/**/*</excludes>
+          <includeTestSourceDirectory>true</includeTestSourceDirectory>
         </configuration>
         <reportSets>
           <reportSet>
