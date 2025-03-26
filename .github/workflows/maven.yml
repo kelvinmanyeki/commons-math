@@ -73,6 +73,7 @@ jobs:
             -Dsonar.sources=commons-math-neuralnet/src/main/java,commons-math-transform/src/main/java,commons-math-legacy-core/src/main/java,commons-math-legacy-exception/src/main/java,commons-math-legacy/src/main/java,predictive-maintenance/src/main/java
             -Dsonar.tests=commons-math-neuralnet/src/test/java,commons-math-transform/src/test/java,commons-math-legacy-core/src/test/java,commons-math-legacy-exception/src/test/java,commons-math-legacy/src/test/java,predictive-maintenance/src/test/java
             -Dsonar.exclusions=commons-math-docs/**,commons-math-examples/**,dist-archive/**,examples-sofm/**,examples-kmeans/**,chinese-rings/**,tsp/**,image/**
+            -Dsonar.coverage.jacoco.xmlReportPaths=commons-math-neuralnet/target/site/jacoco/jacoco.xml,commons-math-transform/target/site/jacoco/jacoco.xml,commons-math-legacy-core/target/site/jacoco/jacoco.xml,commons-math-legacy-exception/target/site/jacoco/jacoco.xml,commons-math-legacy/target/site/jacoco/jacoco.xml,predictive-maintenance/target/site/jacoco/jacoco.xml
 
   dockerize:
     name: Dockerize Application
