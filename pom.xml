@@ -135,11 +135,10 @@
 
   <repositories>
     <repository>
-      <id>local</id>
-      <url>file://${user.home}/.m2/repository</url>
+      <id>local-randoop</id>
+      <url>file://${project.basedir}/libs</url>
     </repository>
   </repositories>
-
 
   <scm>
     <connection>scm:git:http://gitbox.apache.org/repos/asf/commons-math.git</connection>
