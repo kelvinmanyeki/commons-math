@@ -92,6 +92,12 @@
         </exclusion>
       </exclusions>
     </dependency>
+    <dependency>
+      <groupId>org.randoop</groupId>
+      <artifactId>randoop</artifactId>
+      <version>4.3.3</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
   <properties>
     <sonar.skip>false</sonar.skip>
