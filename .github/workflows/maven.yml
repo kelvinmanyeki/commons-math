@@ -41,8 +41,10 @@ jobs:
   build-and-scan:
     name: Build, Test & SonarCloud Scan
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout Repository
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
@@ -55,7 +57,7 @@ jobs:
       - name: Set up Maven
         uses: stCarolas/setup-maven@v4
         with:
-          maven-version: 3.9.6  # Match your local Maven version
+          maven-version: 3.9.6
 
       - name: Cache Maven dependencies
         uses: actions/cache@v3
@@ -63,11 +65,9 @@ jobs:
           path: ~/.m2/repository
           key: maven-${{ hashFiles('**/pom.xml') }}
 
-      - name: Install Randoop JAR (Fix Dependency Resolution)
+      - name: Install Randoop JAR
         run: |
-          # Download Randoop JAR from GitHub releases
           wget https://github.com/randoop/randoop/releases/download/v4.3.3/randoop-4.3.3.jar -O /tmp/randoop-4.3.3.jar
-          # Install into Maven local repo
           mvn install:install-file \
             -Dfile=/tmp/randoop-4.3.3.jar \
             -DgroupId=org.randoop \
@@ -76,16 +76,13 @@ jobs:
             -Dpackaging=jar \
             -DgeneratePom=true
 
-      - name: Build with Maven (Fix Moditect Error)
+      - name: Build with Maven
         run: |
-          # First build to resolve dependencies
           mvn -V --no-transfer-progress clean install -DskipTests
-          # Debug: Print automatic module names from JARs
           find ~/.m2/repository -name "*.jar" | while read jar; do
             echo "Checking module name for: $jar"
             jar --describe-module --file="$jar" || true
           done
-          # Full build with tests
           mvn -V --no-transfer-progress verify
 
       - name: SonarCloud Scan
@@ -104,13 +101,14 @@ jobs:
             -Dsonar.exclusions=commons-math-docs/**,commons-math-examples/**,dist-archive/**,examples-sofm/**,examples-kmeans/**,chinese-rings/**,tsp/**,image/**
             -Dsonar.coverage.jacoco.xmlReportPaths=commons-math-neuralnet/target/site/jacoco/jacoco.xml,commons-math-transform/target/site/jacoco/jacoco.xml,commons-math-legacy-core/target/site/jacoco/jacoco.xml,commons-math-legacy-exception/target/site/jacoco/jacoco.xml,commons-math-legacy/target/site/jacoco/jacoco.xml,predictive-maintenance/target/site/jacoco/jacoco.xml
 
-
   dockerize:
     name: Dockerize Application
     runs-on: ubuntu-latest
     needs: build-and-scan
+
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout Repository
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
@@ -119,6 +117,17 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
+
+      - name: Install Randoop JAR
+        run: |
+          wget https://github.com/randoop/randoop/releases/download/v4.3.3/randoop-4.3.3.jar -O /tmp/randoop-4.3.3.jar
+          mvn install:install-file \
+            -Dfile=/tmp/randoop-4.3.3.jar \
+            -DgroupId=org.randoop \
+            -DartifactId=randoop \
+            -Dversion=4.3.3 \
+            -Dpackaging=jar \
+            -DgeneratePom=true
 
       - name: Build with Maven
         run: mvn -V --no-transfer-progress package -DskipTests
