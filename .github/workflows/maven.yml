@@ -20,7 +20,7 @@
 name: Java CI with SonarCloud and Docker
 
 on:
-  workflow_dispatch:  # Manual trigger
+  workflow_dispatch:
   push:
     branches:
       - master
@@ -35,7 +35,7 @@ on:
 
 permissions:
   contents: read
-  security-events: write  # Required for Code Scanning alerts
+  security-events: write
 
 jobs:
   build-and-scan:
@@ -50,17 +50,43 @@ jobs:
         uses: actions/setup-java@v4
         with:
           java-version: '17'
-          distribution: 'temurin'  # Changed from 'zulu' to 'temurin'
+          distribution: 'temurin'
 
-      # Install Randoop JAR into the Maven local repository
-      - name: Install Randoop JAR
-        run: mvn install:install-file -Dfile=libs/randoop-4.3.3.jar -DgroupId=org.randoop -DartifactId=randoop -Dversion=4.3.3 -Dpackaging=jar
+      - name: Set up Maven
+        uses: stCarolas/setup-maven@v4
+        with:
+          maven-version: 3.9.6  # Match your local Maven version
 
-      - name: Build with Maven
-        run: mvn -V --no-transfer-progress verify
+      - name: Cache Maven dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2/repository
+          key: maven-${{ hashFiles('**/pom.xml') }}
 
-      - name: List target directories
-        run: find . -name "target" -type d
+      - name: Install Randoop JAR (Fix Dependency Resolution)
+        run: |
+          # Download Randoop JAR from GitHub releases
+          wget https://github.com/randoop/randoop/releases/download/v4.3.3/randoop-4.3.3.jar -O /tmp/randoop-4.3.3.jar
+          # Install into Maven local repo
+          mvn install:install-file \
+            -Dfile=/tmp/randoop-4.3.3.jar \
+            -DgroupId=org.randoop \
+            -DartifactId=randoop \
+            -Dversion=4.3.3 \
+            -Dpackaging=jar \
+            -DgeneratePom=true
+
+      - name: Build with Maven (Fix Moditect Error)
+        run: |
+          # First build to resolve dependencies
+          mvn -V --no-transfer-progress clean install -DskipTests
+          # Debug: Print automatic module names from JARs
+          find ~/.m2/repository -name "*.jar" | while read jar; do
+            echo "Checking module name for: $jar"
+            jar --describe-module --file="$jar" || true
+          done
+          # Full build with tests
+          mvn -V --no-transfer-progress verify
 
       - name: SonarCloud Scan
         uses: SonarSource/sonarqube-scan-action@v5.0.0
@@ -72,16 +98,16 @@ jobs:
             -Dsonar.projectKey=kelvinmanyeki_commons-math
             -Dsonar.organization=kevosd
             -Dsonar.host.url=https://sonarcloud.io
-            -Dsonar.java.binaries=commons-math-neuralnet/target/classes,commons-math-transform/target/classes,commons-math-legacy-core/target/classes,commons-math-legacy-exception/target/classes,commons-math-legacy/target/classes
-            -Dsonar.sources=commons-math-neuralnet/src/main/java,commons-math-transform/src/main/java,commons-math-legacy-core/src/main/java,commons-math-legacy-exception/src/main/java,commons-math-legacy/src/main/java,predictive-maintenance/src/main/java
-            -Dsonar.tests=commons-math-neuralnet/src/test/java,commons-math-transform/src/test/java,commons-math-legacy-core/src/test/java,commons-math-legacy-exception/src/test/java,commons-math-legacy/src/test/java,predictive-maintenance/src/test/java
-            -Dsonar.exclusions=commons-math-docs/**,commons-math-examples/**,dist-archive/**,examples-sofm/**,examples-kmeans/**,chinese-rings/**,tsp/**,image/**
-            -Dsonar.coverage.jacoco.xmlReportPaths=commons-math-neuralnet/target/site/jacoco/jacoco.xml,commons-math-transform/target/site/jacoco/jacoco.xml,commons-math-legacy-core/target/site/jacoco/jacoco.xml,commons-math-legacy-exception/target/site/jacoco/jacoco.xml,commons-math-legacy/target/site/jacoco/jacoco.xml,predictive-maintenance/target/site/jacoco/jacoco.xml
+            -Dsonar.java.binaries=**/target/classes
+            -Dsonar.sources=**/src/main/java
+            -Dsonar.tests=**/src/test/java
+            -Dsonar.exclusions=**/docs/**,**/examples/**,**/dist-archive/**
+            -Dsonar.coverage.jacoco.xmlReportPaths=**/target/site/jacoco/jacoco.xml
 
   dockerize:
     name: Dockerize Application
     runs-on: ubuntu-latest
-    needs: build-and-scan  # Ensure this job runs only after the build-and-scan job succeeds
+    needs: build-and-scan
     steps:
       - uses: actions/checkout@v4
         with:
@@ -91,7 +117,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           java-version: '17'
-          distribution: 'temurin'  # Changed from 'zulu' to 'temurin'
+          distribution: 'temurin'
 
       - name: Build with Maven
         run: mvn -V --no-transfer-progress package -DskipTests
