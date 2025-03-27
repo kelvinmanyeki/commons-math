@@ -66,9 +66,9 @@ jobs:
         run: |
           mkdir -p randoop-tests
           java -ea -classpath /tmp/randoop-4.3.3.jar:target/classes randoop.main.Main gentests \
-            --testclass=<YOUR_CLASS_NAME> \
+            --testclass=com.myproject.Main \
             --junit-output-dir=randoop-tests \
-            --time-limit=60
+            --time-limit=30
 
       - name: Build and Run Coverage with Maven
         run: mvn --show-version --batch-mode --no-transfer-progress test jacoco:report-aggregate
