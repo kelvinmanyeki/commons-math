@@ -89,7 +89,7 @@ public final class AccurateMath {
 
     /** Indicator for tables initialization.
      * <p>
-     * This compile-time constant should be set to true only if one explicitly
+     * This compile-time constant should be set to true only if one explicitLly
      * wants to compute the tables at class loading time instead of using the
      * already computed ones provided as literal arrays below.
      * </p>
