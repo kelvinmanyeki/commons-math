@@ -16,9 +16,9 @@
 name: Coverage
 
 on:
-  # allow direct trigger
+  # Allow direct trigger
   workflow_dispatch:
-  # Don't trigger if other workfiles change
+  # Don't trigger if other workflows change
   push:
     paths-ignore:
       - '**/workflows/*.yml'
@@ -33,26 +33,47 @@ permissions:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        java: [ 11 ] # Use 11 rather than 8, as 8 fails currently
+        java: [11] # Use Java 11 instead of 8, as 8 fails currently
 
     steps:
-    - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # 4.1.1
-      with:
-        persist-credentials: false
-    - name: Set up JDK ${{ matrix.java }}
-      uses: actions/setup-java@9704b39bf258b59bc04b50fa2dd55e9ed76b47a8 # v4.1.0
-      with:
-        distribution: temurin
-        java-version: ${{ matrix.java }}
-        cache: 'maven'
-    - name: Build with Maven
-      run: mvn --show-version --batch-mode --no-transfer-progress test jacoco:report-aggregate
+      - name: Checkout Repository
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # 4.1.1
+        with:
+          persist-credentials: false
 
-    - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@eaaf4bedf32dbdc6b720b63067d99c4d77d6047d # v3.1.4
-      with:
-        files: ./docs-archive/target/site/jacoco-aggregate/jacoco.xml
+      - name: Set up JDK ${{ matrix.java }}
+        uses: actions/setup-java@9704b39bf258b59bc04b50fa2dd55e9ed76b47a8 # v4.1.0
+        with:
+          distribution: temurin
+          java-version: ${{ matrix.java }}
+          cache: 'maven'
+
+      - name: Install Randoop JAR
+        run: |
+          wget https://github.com/randoop/randoop/releases/download/v4.3.3/randoop-4.3.3.jar -O /tmp/randoop-4.3.3.jar
+          mvn install:install-file \
+            -Dfile=/tmp/randoop-4.3.3.jar \
+            -DgroupId=org.randoop \
+            -DartifactId=randoop \
+            -Dversion=4.3.3 \
+            -Dpackaging=jar \
+            -DgeneratePom=true
+
+      - name: Generate Tests with Randoop
+        run: |
+          mkdir -p randoop-tests
+          java -ea -classpath /tmp/randoop-4.3.3.jar:target/classes randoop.main.Main gentests \
+            --testclass=<YOUR_CLASS_NAME> \
+            --junit-output-dir=randoop-tests \
+            --time-limit=60
+
+      - name: Build and Run Coverage with Maven
+        run: mvn --show-version --batch-mode --no-transfer-progress test jacoco:report-aggregate
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@eaaf4bedf32dbdc6b720b63067d99c4d77d6047d # v3.1.4
+        with:
+          files: ./docs-archive/target/site/jacoco-aggregate/jacoco.xml
