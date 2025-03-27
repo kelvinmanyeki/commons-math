@@ -17,25 +17,34 @@
 # contributor license agreements. See the NOTICE file for details.
 # Licensed under the Apache License, Version 2.0.
 
-# Stage 1: Build stage
-FROM maven:3.8.6-eclipse-temurin-17 as builder
+# Dockerfile
+FROM maven:3.9.6-eclipse-temurin-17 AS build
 
 WORKDIR /app
 
-# Copy parent POM and install
-COPY pom.xml .
-RUN mvn -N install -Dcheckstyle.skip=true -Drat.skip=true
+# Copy the entire project
+COPY . .
 
-# Copy module files
-COPY predictive-maintenance/pom.xml predictive-maintenance/
-COPY predictive-maintenance/src/ predictive-maintenance/src/
+# Install Randoop JAR from the local libs directory
+RUN mvn install:install-file \
+    -Dfile=/app/libs/randoop-4.3.3.jar \
+    -DgroupId=org.randoop \
+    -DartifactId=randoop \
+    -Dversion=4.3.3 \
+    -Dpackaging=jar \
+    -DgeneratePom=true
 
-# Build the fat JAR
-RUN mvn -f predictive-maintenance/pom.xml clean package
+# Build the application
+RUN mvn -V --no-transfer-progress package -DskipTests
 
-# Stage 2: Runtime image
-FROM eclipse-temurin:17-jre-alpine
+# Runtime stage
+FROM eclipse-temurin:17-jre
+
 WORKDIR /app
-COPY --from=builder /app/predictive-maintenance/target/predictive-maintenance-*.jar /app/app.jar
+
+# Copy the built JAR from the build stage
+COPY --from=build /app/predictive-maintenance/target/*.jar app.jar
+
 EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "/app/app.jar"]
+
+ENTRYPOINT ["java", "-jar", "app.jar"]
