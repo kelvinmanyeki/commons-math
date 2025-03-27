@@ -22,7 +22,7 @@ import java.io.PrintStream;
 /** Class used to compute the classical functions tables.
  * @since 3.0
  */
-public final class AccurateMathCalc {
+final class AccurateMathCalc {
 
     /**
      * 0x40000000 - used to split a double into two parts, both with the low order bits cleared.
