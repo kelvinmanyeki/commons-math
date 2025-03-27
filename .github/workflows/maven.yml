@@ -17,7 +17,6 @@
 # contributor license agreements. See the NOTICE file for details.
 # Licensed under the Apache License, Version 2.0.
 
-
 name: Java CI with SonarCloud and Docker
 
 on:
@@ -52,6 +51,10 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'  # Changed from 'zulu' to 'temurin'
+
+      # Install Randoop JAR into the Maven local repository
+      - name: Install Randoop JAR
+        run: mvn install:install-file -Dfile=libs/randoop-4.3.3.jar -DgroupId=org.randoop -DartifactId=randoop -Dversion=4.3.3 -Dpackaging=jar
 
       - name: Build with Maven
         run: mvn -V --no-transfer-progress verify
