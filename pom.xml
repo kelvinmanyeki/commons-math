@@ -258,18 +258,6 @@
     </dependency>
 
     <dependency>
-      <groupId>org.plumelib</groupId>
-      <artifactId>options</artifactId>
-      <version>2.0.3</version> <!-- Adjust if needed -->
-    </dependency>
-
-    <dependency>
-      <groupId>org.plumelib</groupId>
-      <artifactId>plume-util</artifactId>
-      <version>1.10.0</version> <!-- Use the correct version if needed -->
-    </dependency>
-
-    <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-exec</artifactId>
       <version>1.4.0</version> <!-- Use the latest version available -->
