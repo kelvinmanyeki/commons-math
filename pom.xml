@@ -133,6 +133,14 @@
 
   </modules>
 
+  <repositories>
+    <repository>
+      <id>local</id>
+      <url>file://${user.home}/.m2/repository</url>
+    </repository>
+  </repositories>
+
+
   <scm>
     <connection>scm:git:http://gitbox.apache.org/repos/asf/commons-math.git</connection>
     <developerConnection>scm:git:https://gitbox.apache.org/repos/asf/commons-math.git</developerConnection>
