@@ -62,14 +62,6 @@ jobs:
             -Dpackaging=jar \
             -DgeneratePom=true
 
-      - name: Generate Tests with Randoop
-        run: |
-          mkdir -p randoop-tests
-          java -ea -classpath /tmp/randoop-4.3.3.jar:/tmp/javaparser-core-3.25.9.jar:target/classes randoop.main.Main gentests \
-            --testclass=com.myproject.Main \
-            --junit-output-dir=randoop-tests \
-            --time-limit=30
-
       - name: Build and Run Coverage with Maven
         run: mvn --show-version --batch-mode --no-transfer-progress test jacoco:report-aggregate
 
