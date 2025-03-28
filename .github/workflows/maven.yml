@@ -67,27 +67,24 @@ jobs:
 
       - name: Install Randoop JAR
         run: |
-          wget https://github.com/randoop/randoop/releases/download/v4.3.3/randoop-4.3.3.jar -O /tmp/randoop-4.3.3.jar
+          mkdir -p libs
+          if ! wget -q https://github.com/randoop/randoop/releases/download/v4.3.3/randoop-4.3.3.jar -O libs/randoop-4.3.3.jar; then
+              echo "❌ Failed to download Randoop JAR"
+              exit 1
+          fi
           mvn install:install-file \
-            -Dfile=/tmp/randoop-4.3.3.jar \
+            -Dfile=libs/randoop-4.3.3.jar \
             -DgroupId=org.randoop \
             -DartifactId=randoop \
             -Dversion=4.3.3 \
             -Dpackaging=jar \
             -DgeneratePom=true
-          
-          # Also copy the JAR to the libs directory for Docker build
-          mkdir -p libs
-          cp /tmp/randoop-4.3.3.jar libs/randoop-4.3.3.jar
 
       - name: Build with Maven
         run: |
           mvn -V --no-transfer-progress clean install -DskipTests
-          find ~/.m2/repository -name "*.jar" | while read jar; do
-            echo "Checking module name for: $jar"
-            jar --describe-module --file="$jar" || true
-          done
           mvn -V --no-transfer-progress verify
+
       - name: SonarCloud Scan
         uses: SonarSource/sonarqube-scan-action@v5.0.0
         env:
@@ -98,11 +95,11 @@ jobs:
             -Dsonar.projectKey=kelvinmanyeki_commons-math
             -Dsonar.organization=kevosd
             -Dsonar.host.url=https://sonarcloud.io
-            -Dsonar.java.binaries=commons-math-neuralnet/target/classes,commons-math-transform/target/classes,commons-math-legacy-core/target/classes,commons-math-legacy-exception/target/classes,commons-math-legacy/target/classes
-            -Dsonar.sources=commons-math-neuralnet/src/main/java,commons-math-transform/src/main/java,commons-math-legacy-core/src/main/java,commons-math-legacy-exception/src/main/java,commons-math-legacy/src/main/java,predictive-maintenance/src/main/java
-            -Dsonar.tests=commons-math-neuralnet/src/test/java,commons-math-transform/src/test/java,commons-math-legacy-core/src/test/java,commons-math-legacy-exception/src/test/java,commons-math-legacy/src/test/java,predictive-maintenance/src/test/java
-            -Dsonar.exclusions=commons-math-docs/**,commons-math-examples/**,dist-archive/**,examples-sofm/**,examples-kmeans/**,chinese-rings/**,tsp/**,image/**
-            -Dsonar.coverage.jacoco.xmlReportPaths=commons-math-neuralnet/target/site/jacoco/jacoco.xml,commons-math-transform/target/site/jacoco/jacoco.xml,commons-math-legacy-core/target/site/jacoco/jacoco.xml,commons-math-legacy-exception/target/site/jacoco/jacoco.xml,commons-math-legacy/target/site/jacoco/jacoco.xml,predictive-maintenance/target/site/jacoco/jacoco.xml
+            -Dsonar.java.binaries=**/target/classes
+            -Dsonar.sources=src/main/java
+            -Dsonar.tests=src/test/java
+            -Dsonar.exclusions=**/docs/**,**/examples/**,**/dist-archive/**
+            -Dsonar.coverage.jacoco.xmlReportPaths=**/target/site/jacoco/jacoco.xml
 
   dockerize:
     name: Dockerize Application
@@ -129,11 +126,15 @@ jobs:
 
       - name: Build Docker image
         run: |
-          # Install Randoop JAR locally for Docker build context
+          # Verify and prepare Randoop dependency
           mkdir -p libs
-          wget https://github.com/randoop/randoop/releases/download/v4.3.3/randoop-4.3.3.jar -O libs/randoop-4.3.3.jar
+          if ! wget -q https://github.com/randoop/randoop/releases/download/v4.3.3/randoop-4.3.3.jar -O libs/randoop-4.3.3.jar; then
+              echo " Failed to download Randoop JAR for Docker build"
+              exit 1
+          fi
+          [ -s libs/randoop-4.3.3.jar ] || (echo " Randoop JAR is empty"; exit 1)
           
-          docker build -t manyeki/predictive-maintenance:latest .
-          
+          docker build --no-cache -t manyeki/predictive-maintenance:latest .
+
       - name: Push Docker image
         run: docker push manyeki/predictive-maintenance:latest
