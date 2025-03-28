@@ -69,7 +69,7 @@ jobs:
         run: |
           mkdir -p libs
           if ! wget -q https://github.com/randoop/randoop/releases/download/v4.3.3/randoop-4.3.3.jar -O libs/randoop-4.3.3.jar; then
-              echo "❌ Failed to download Randoop JAR"
+              echo "Failed to download Randoop JAR"
               exit 1
           fi
           mvn install:install-file \
@@ -126,14 +126,13 @@ jobs:
 
       - name: Build Docker image
         run: |
-          # Verify and prepare Randoop dependency
           mkdir -p libs
           if ! wget -q https://github.com/randoop/randoop/releases/download/v4.3.3/randoop-4.3.3.jar -O libs/randoop-4.3.3.jar; then
-              echo "❌ Failed to download Randoop JAR for Docker build"
+              echo " Failed to download Randoop JAR for Docker build"
               exit 1
           fi
-          [ -s libs/randoop-4.3.3.jar ] || (echo "🛑 Randoop JAR is empty"; exit 1)
-          
+          [ -s libs/randoop-4.3.3.jar ] || (echo " Randoop JAR is empty"; exit 1)
+
           docker build --no-cache -t manyeki/predictive-maintenance:latest .
 
       - name: Push Docker image
