@@ -17,34 +17,33 @@
 # contributor license agreements. See the NOTICE file for details.
 # Licensed under the Apache License, Version 2.0.
 
-# Dockerfile
+# Build stage
 FROM maven:3.9.6-eclipse-temurin-17 AS build
 
 WORKDIR /app
 
-# Copy the entire project
-COPY . .
+# Copy build essentials first
+COPY pom.xml .
+COPY libs/randoop-4.3.3.jar libs/
 
-# Install Randoop JAR from the local libs directory
+# Install Randoop early to leverage caching
 RUN mvn install:install-file \
-    -Dfile=/app/libs/randoop-4.3.3.jar \
+    -Dfile=libs/randoop-4.3.3.jar \
     -DgroupId=org.randoop \
     -DartifactId=randoop \
     -Dversion=4.3.3 \
     -Dpackaging=jar \
     -DgeneratePom=true
 
-# Build the application
+# Copy remaining source files
+COPY src/ ./src/
+
+# Build application
 RUN mvn -V --no-transfer-progress package -DskipTests
 
 # Runtime stage
 FROM eclipse-temurin:17-jre
-
 WORKDIR /app
-
-# Copy the built JAR from the build stage
 COPY --from=build /app/predictive-maintenance/target/*.jar app.jar
-
 EXPOSE 8080
-
 ENTRYPOINT ["java", "-jar", "app.jar"]
