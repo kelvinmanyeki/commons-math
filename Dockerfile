@@ -22,11 +22,11 @@ FROM maven:3.9.6-eclipse-temurin-17 AS build
 
 WORKDIR /app
 
-# Copy build essentials first
+# Copy build configuration files first to leverage Docker cache
 COPY pom.xml .
 COPY libs/randoop-4.3.3.jar libs/
 
-# Install Randoop early to leverage caching
+# Install Randoop dependency
 RUN mvn install:install-file \
     -Dfile=libs/randoop-4.3.3.jar \
     -DgroupId=org.randoop \
@@ -35,15 +35,25 @@ RUN mvn install:install-file \
     -Dpackaging=jar \
     -DgeneratePom=true
 
-# Copy remaining source files
+# Download dependencies (this will be cached unless pom.xml changes)
+RUN mvn dependency:go-offline
+
+# Copy source files
 COPY src/ ./src/
 
 # Build application
-RUN mvn -V --no-transfer-progress package -DskipTests
+RUN mvn -V --no-transfer-progress clean package -DskipTests
 
 # Runtime stage
-FROM eclipse-temurin:17-jre
+FROM eclipse-temurin:17-jre-jammy
 WORKDIR /app
-COPY --from=build /app/predictive-maintenance/target/*.jar app.jar
+
+# Copy the built jar from the build stage
+# Note: Using a specific path pattern is safer than wildcard
+COPY --from=build /app/predictive-maintenance/target/predictive-maintenance-*.jar app.jar
+
+# Expose the port the app runs on
 EXPOSE 8080
+
+# Run the application with recommended JVM options
 ENTRYPOINT ["java", "-jar", "app.jar"]
