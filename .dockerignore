@@ -17,7 +17,6 @@
 **/target/
 **/bin/
 **/out/
-**/*.jar
 **/*.war
 
 # Version control
